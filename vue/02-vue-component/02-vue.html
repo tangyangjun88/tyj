@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>组件-插槽</title>
+</head>
+<body>
+<div id="app">
+    <todo>
+        <!-- v-bind:title1="title"，这里的title取得是data下的title的值-->
+        <todo-title slot="todo-title" v-bind:title1="title"></todo-title>
+        <!-- v-bind:item1="i",这里的取至v-for="item1 in item"中的item1,名称可以随便取,item取值是data下的item数组-->
+        <todo-item  slot="todo-item" v-for="(item1,i) in item" v-bind:item1="item1" v-bind:index="i" @delete="remove(i)"></todo-item>
+    </todo>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.5.21/dist/vue.js"></script>
+<script type="text/javascript">
+    Vue.component("todo",{
+        template:"<div>\
+                       <slot name='todo-title'></slot> \
+                       <ul>\
+                            <slot name='todo-item'></slot>\
+                       </ul>\
+                   </div>\
+        "
+    });
+    Vue.component("todo-title",{
+        props:['title1'],
+        template: "<div>{{title1}}</div>"
+    });
+    Vue.component("todo-item",{
+        props:['item1','index'],
+       template:"<li>{{index}}-{{item1}} <button @click='remove(index)'>删除</button></li>",
+        methods:{
+            remove:function (index) {
+                this.$emit("delete",index);
+            }
+        }
+    });
+    var vm = new Vue({
+        el:"#app",
+        data:{
+            title:"标题",
+            item:["张三","李四","王五"]
+        },
+        methods: {
+            remove:function (index) {
+                //splice按照下标删除,1表示从下标起删除几个
+               this.item.splice(index,1);
+            }
+        }
+    });
+</script>
+</body>
+</html>
